@@ -1,0 +1,24 @@
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'org.jetbrains.kotlin.jvm'
+    id 'org.jetbrains.kotlin.plugin.spring'
+}
+
+group = 'org.javen.framework'
+version = libs.versions.projectVersion.get()
+
+dependencies {
+    implementation libs.bundles.guava
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+
+    compileOnly 'org.springframework.boot:spring-boot-starter'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register("prepareKotlinBuildScriptModel"){}
