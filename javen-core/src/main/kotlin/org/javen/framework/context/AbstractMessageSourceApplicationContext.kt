@@ -15,14 +15,12 @@ abstract class AbstractMessageSourceApplicationContext(basePackages: Collection<
     }
 
     override fun getMessage(code: Int, locale: Locale, params: Array<Any>?): String {
-        val template: String? = doGetMessageTemplate(code, locale)
-        if (template == null) {
-            throw MessageNotFoundException("Message with code [${code}] not found")
-        }
-        if (params != null) {
-            return formatMessage(template, params)
+        val template: String = doGetMessageTemplate(code, locale)
+            ?: throw MessageNotFoundException("Message with code [${code}] not found")
+        return if (params != null) {
+            formatMessage(template, params)
         } else {
-            return template
+            template
         }
     }
 

@@ -2,7 +2,7 @@ package org.javen.framework.context.beans
 
 import org.apache.commons.lang3.StringUtils
 import org.javen.framework.context.InstanceObject
-import org.javen.framework.core.annotation.Component
+import org.javen.framework.core.Component
 import org.javen.framework.core.type.filter.TypeMatcher
 import org.javen.framework.utils.UnsafeUtils
 import java.util.LinkedList
@@ -91,7 +91,11 @@ abstract class AbstractBeanFactory : BeanFactory, InstanceObject {
             bean?.unwrap()?.let { instanceParams.add(it) }
         }
 
-        return InternalBean(seed.selfCreate(instanceParams.toTypedArray()), definition.isSingleton())
+        return InternalBean(
+            seed.selfCreate(instanceParams.toTypedArray()),
+            definition.isSingleton(),
+            definition.getOrder()
+        )
     }
 
     private class SubClassMatcher(private val subClassType: KClass<*>) : TypeMatcher {
@@ -116,8 +120,11 @@ abstract class AbstractBeanFactory : BeanFactory, InstanceObject {
         }
     }
 
-    private class InternalBean(private val delegate: InstanceObject, private val isSingleton: Boolean) :
-        Bean<InstanceObject> {
+    private class InternalBean(
+        private val delegate: InstanceObject,
+        private val isSingleton: Boolean,
+        private val order: Int
+    ) : Bean<InstanceObject> {
         override fun unwrap(): InstanceObject {
             return this.delegate
         }
@@ -126,18 +133,26 @@ abstract class AbstractBeanFactory : BeanFactory, InstanceObject {
             return this.isSingleton
         }
 
+        override fun getOrder(): Int {
+            return this.order
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other !is InternalBean) return false
 
             if (delegate != other.delegate) return false
+            if (isSingleton != other.isSingleton) return false
+            if (order != other.order) return false
 
             return true
         }
 
         override fun hashCode(): Int {
-            return delegate.hashCode()
+            var result = delegate.hashCode()
+            result = 31 * result + isSingleton.hashCode()
+            result = 31 * result + order
+            return result
         }
-
     }
 }

@@ -1,6 +1,5 @@
 package org.javen.framework.core.type.scanner
 
-import org.javen.framework.core.type.filter.TypeFilter
 import org.javen.framework.io.FileSystemResourceLoader
 import org.javen.framework.io.Resource
 import org.javen.framework.io.ResourceLoader
@@ -17,7 +16,6 @@ import kotlin.reflect.KClass
 open class PackageScanner(classLoader: ClassLoader) : AbstractScanner<KClass<*>>(classLoader) {
 
     private val fileSystemResourceLoader: ResourceLoader
-    private val filters: MutableList<TypeFilter<KClass<*>>> = LinkedList()
 
     init {
         this.fileSystemResourceLoader = FileSystemResourceLoader(classLoader)

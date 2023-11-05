@@ -13,6 +13,7 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
     compileOnly 'org.springframework.boot:spring-boot-starter'
+    compileOnly libs.bundles.loggingCompile
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
@@ -21,4 +22,4 @@ test {
     useJUnitPlatform()
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+tasks.register("prepareKotlinBuildScriptModel") {}

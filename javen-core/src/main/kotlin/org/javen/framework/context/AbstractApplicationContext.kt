@@ -9,39 +9,38 @@ abstract class AbstractApplicationContext(activeProfileProvider: ActiveProfilePr
 
     companion object {
         const val THREAD_POOL_MANAGER_BEAN_NAME = "threadPoolManager"
-        private val THREAD_POOL_MANAGER_CLASS_NAME = getThreadPoolManagerClassName()
 
         fun getThreadPoolManagerClassName(): String {
             return ThreadPoolManager::class.java.name
         }
     }
 
-    private val activeProfile: String
-    private val environment: Environment
-    private val applicationId: String
+    private val _activeProfile: String
+    private val _environment: Environment // prevent kotlin generate getter for it.
+    private val _applicationId: String
 
     private var threadPoolManager: ThreadPoolManager? = null
 
     init {
-        this.activeProfile = activeProfileProvider.getActiveProfile()
-        this.environment = Environment.getInstance(activeProfile)!!
-        this.applicationId = generateAppId()
+        this._activeProfile = activeProfileProvider.getActiveProfile()
+        this._environment = Environment.getInstance(_activeProfile)!!
+        this._applicationId = generateAppId()
     }
 
     override fun getId(): String {
-        return this.applicationId
-    }
-
-    override fun getEnvironment(): Environment {
-        return this.environment
+        return this._applicationId
     }
 
     override fun getProfileActivated(): String {
-        return this.activeProfile
+        return this._activeProfile
     }
 
     override fun getBean(name: String): InstanceObject {
         return getBeanFactory().getBean(name)
+    }
+
+    override fun getEnvironment(): Environment {
+        return this._environment
     }
 
     override fun <T : InstanceObject> getBean(type: KClass<T>): T {

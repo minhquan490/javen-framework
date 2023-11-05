@@ -1,29 +1,38 @@
 package org.javen.framework.context.beans
 
-import org.javen.framework.core.annotation.Component
+import org.javen.framework.core.Component
+import org.javen.framework.core.Ordered
+import org.javen.framework.core.Scope
 import org.javen.framework.core.type.reader.ClassMetadata
 import org.javen.framework.core.type.reader.ConstructorMetadata
 import java.io.Serializable
 
-class BeanDefinition(private val classMetadata: ClassMetadata, private val beanName: String, component: Component) :
-    Serializable {
+class BeanDefinition(
+    private val classMetadata: ClassMetadata,
+    private val beanName: String,
+    component: Component,
+    scope: Scope?
+) :
+    Ordered, Serializable {
 
-    private val isLazy: Boolean
-    private val isSingleton: Boolean
-    private val javaType: Class<*>
+    private val _isLazy: Boolean
+    private val _isSingleton: Boolean
+    private val _javaType: Class<*>
+    private var _order: Int
 
     init {
-        this.isLazy = component.lazy
-        this.isSingleton = component.scope == Component.Scope.SINGLETON
-        this.javaType = Class.forName("${classMetadata.packageName}.${classMetadata.simpleClassName}")
+        this._isLazy = component.lazy
+        this._isSingleton = isBeanSingleton(scope)
+        this._javaType = Class.forName("${classMetadata.packageName}.${classMetadata.simpleClassName}")
+        this._order = component.order
     }
 
     fun isLazy(): Boolean {
-        return this.isLazy
+        return this._isLazy
     }
 
     fun isSingleton(): Boolean {
-        return this.isSingleton
+        return this._isSingleton
     }
 
     fun getBeanName(): String {
@@ -31,20 +40,38 @@ class BeanDefinition(private val classMetadata: ClassMetadata, private val beanN
     }
 
     fun getType(): Class<*> {
-        return this.javaType
+        return this._javaType
+    }
+
+    fun setOrder(order: Int) {
+        this._order = order
+    }
+
+    fun getConstructorPrimary(): ConstructorMetadata? {
+        val constructors: Array<out ConstructorMetadata> = classMetadata.constructors ?: return null
+
+        for (con in constructors) {
+            if (con.isPrimary) {
+                return con
+            }
+        }
+
+        return null
     }
 
     fun getPrimaryConstructorParameters(): Array<Class<*>> {
-        val constructors: Array<ConstructorMetadata>? = classMetadata.constructors
-        if (constructors != null) {
-            for (con in constructors) {
-                if (con.isPrimary) {
-                    return loadType(con.paramTypes)
-                }
-            }
+
+        val constructor: ConstructorMetadata? = getConstructorPrimary()
+
+        return if (constructor != null) {
+            loadType(constructor.paramTypes)
+        } else {
+            emptyArray()
         }
-        val constructor: ConstructorMetadata = constructors?.get(0) ?: return emptyArray()
-        return loadType(constructor.paramTypes)
+    }
+
+    private fun isBeanSingleton(scope: Scope?): Boolean {
+        return scope == null || scope.value == Scope.ControllerScope.SINGLETON
     }
 
     private fun loadType(names: Array<String>?): Array<Class<*>> {
@@ -60,6 +87,10 @@ class BeanDefinition(private val classMetadata: ClassMetadata, private val beanN
         }
     }
 
+    override fun getOrder(): Int {
+        return this._order
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -67,16 +98,16 @@ class BeanDefinition(private val classMetadata: ClassMetadata, private val beanN
         other as BeanDefinition
 
         if (classMetadata != other.classMetadata) return false
-        if (isLazy != other.isLazy) return false
-        if (isSingleton != other.isSingleton) return false
+        if (_isLazy != other._isLazy) return false
+        if (_isSingleton != other._isSingleton) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = classMetadata.hashCode()
-        result = 31 * result + isLazy.hashCode()
-        result = 31 * result + isSingleton.hashCode()
+        result = 31 * result + _isLazy.hashCode()
+        result = 31 * result + _isSingleton.hashCode()
         return result
     }
 

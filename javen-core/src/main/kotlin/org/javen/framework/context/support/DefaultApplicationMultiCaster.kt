@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package org.javen.framework.context.support
 
 import org.javen.framework.context.InstanceObject
@@ -7,8 +9,9 @@ import org.javen.framework.context.event.ApplicationEvent
 import org.javen.framework.context.event.ApplicationEventMultiCaster
 import org.javen.framework.context.event.ApplicationRefreshEventHandler
 import org.javen.framework.context.event.EventListener
-import org.javen.framework.core.annotation.Component
-import org.javen.framework.core.annotation.Ignore
+import org.javen.framework.core.Component
+import org.javen.framework.core.Ignore
+import org.javen.framework.core.Scope
 import org.javen.framework.core.type.reader.ClassMetadata
 import org.javen.framework.core.type.reader.ClassReader
 import org.javen.framework.core.type.scanner.ScanResult
@@ -19,6 +22,7 @@ import java.util.Queue
 import kotlin.reflect.KClass
 
 @Ignore
+@Component
 class DefaultApplicationMultiCaster(
     scanningResult: ScanResult<Collection<KClass<*>>>,
     beanFactory: AbstractBeanFactory
@@ -72,7 +76,8 @@ class DefaultApplicationMultiCaster(
         return BeanDefinition(
             classMetadata,
             beanFactory.resolveBeanName(javaType),
-            javaType.getAnnotation(Component::class.java)
+            javaType.getAnnotation(Component::class.java),
+            javaType.getAnnotation(Scope::class.java)
         )
     }
 

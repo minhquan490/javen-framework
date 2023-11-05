@@ -1,11 +1,13 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package org.javen.framework.context.event
 
 import org.javen.framework.context.InstanceObject
 import org.javen.framework.context.beans.AbstractBeanFactory
 import org.javen.framework.context.beans.BeanDefinition
 import org.javen.framework.context.support.DefaultApplicationMultiCaster
-import org.javen.framework.core.annotation.Component
-import org.javen.framework.core.annotation.Ignore
+import org.javen.framework.core.Component
+import org.javen.framework.core.Ignore
 import java.util.LinkedList
 import java.util.Queue
 import kotlin.reflect.KClass

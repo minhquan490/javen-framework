@@ -10,6 +10,7 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
+            version('springBoot', '3.1.5')
             version('lunceneVersion', '9.8.0')
             version('gmailApi', 'v1-rev20231002-2.0.0')
             version('guavaVersion', '32.1.3-jre')
@@ -23,6 +24,7 @@ dependencyResolutionManagement {
             version('googleAutoService', '1.0.1')
             version('netty', '4.1.100.Final')
             version('nettyQuic', '0.0.20.Final')
+            version('commonLogging', '1.2')
             version('projectVersion', '1.0.0')
 
             library('lucene-core', 'org.apache.lucene', 'lucene-core').versionRef('lunceneVersion')
@@ -48,6 +50,10 @@ dependencyResolutionManagement {
             library('logback-access', 'ch.qos.logback', 'logback-access').versionRef('logback')
             library('slf4j', 'org.slf4j', 'slf4j-api').versionRef('slf4j')
             bundle('logback', ['logback-core', 'logback-classic', 'slf4j', 'logback-access'])
+
+            library('log4j2', 'org.springframework.boot', 'spring-boot-starter-log4j2').versionRef('springBoot')
+            library('common-logging', 'commons-logging', 'commons-logging').versionRef('commonLogging')
+            bundle('loggingCompile', ['log4j2', 'common-logging'])
 
             library('netty-all', 'io.netty', 'netty-all').versionRef('netty')
             library('netty-codec-stomp', 'io.netty', 'netty-codec-stomp').versionRef('netty')

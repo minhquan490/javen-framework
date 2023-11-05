@@ -7,12 +7,14 @@ import org.javen.framework.context.event.ApplicationEvent;
 import org.javen.framework.context.event.ApplicationEventMultiCaster;
 import org.javen.framework.context.event.EventListener;
 import org.javen.framework.context.support.DefaultApplicationMultiCaster;
-import org.javen.framework.core.annotation.Component;
+import org.javen.framework.core.Component;
 import org.javen.framework.core.concurrent.scheduling.ThreadPoolManager;
+import org.javen.framework.core.type.filter.TypeFilter;
 import org.javen.framework.core.type.filter.runtime.AnnotatedFilter;
 import org.javen.framework.core.type.filter.runtime.AssignableFilter;
 import org.javen.framework.core.type.scanner.PackageScanner;
 import org.javen.framework.core.type.scanner.ScanResult;
+import org.javen.framework.core.type.scanner.Scanner;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -58,10 +60,11 @@ public abstract class AbstractApplicationPublisher extends AbstractApplicationCo
         return new DefaultApplicationMultiCaster(scanner.scan(basePackages), (AbstractBeanFactory) getBeanFactory());
     }
 
-    private static class EventHandlerScanner extends PackageScanner {
+    private static class EventHandlerScanner implements Scanner<Collection<KClass<?>>> {
+        private final PackageScanner delegate;
 
         public EventHandlerScanner(@NotNull ClassLoader classLoader) {
-            super(classLoader);
+            this.delegate = new PackageScanner(classLoader);
             addFilter(new AnnotatedFilter(JvmClassMappingKt.getKotlinClass(Component.class)));
             addFilter(new AssignableFilter(JvmClassMappingKt.getKotlinClass(EventListener.class)));
         }
@@ -69,7 +72,18 @@ public abstract class AbstractApplicationPublisher extends AbstractApplicationCo
         @NotNull
         @Override
         public ScanResult<Collection<KClass<?>>> scan(@NotNull Collection<String> paths) {
-            return super.scan(paths);
+            return delegate.scan(paths);
+        }
+
+        @NotNull
+        @Override
+        public ClassLoader getClassLoader() {
+            return delegate.getClassLoader();
+        }
+
+        @Override
+        public <U> void addFilter(@NotNull TypeFilter<U> filter) {
+            delegate.addFilter(filter);
         }
     }
 }

@@ -1,8 +1,8 @@
 package org.javen.framework.context.support;
 
 import org.javen.framework.context.AbstractMessageSourceApplicationContext;
-import org.javen.framework.core.annotation.Component;
-import org.javen.framework.core.annotation.Ignore;
+import org.javen.framework.core.Component;
+import org.javen.framework.core.Ignore;
 import org.javen.framework.core.message.MessageSourceRepository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

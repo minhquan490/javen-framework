@@ -1,12 +1,10 @@
 package org.javen.framework.core.env
 
-import org.javen.framework.core.env.decorator.DefaultDecorator
-import org.javen.framework.core.env.decorator.PropertiesDecorator
 import org.javen.framework.core.env.parser.ClasspathParser
-import org.javen.framework.core.env.parser.Parser
 import org.javen.framework.io.FileSystemResourceLoader
 import org.javen.framework.io.Resource
 import org.javen.framework.io.ResourceLoader
+import org.javen.framework.io.utils.ResourceUtils
 import java.util.Properties
 import java.util.concurrent.ConcurrentHashMap
 
@@ -80,21 +78,7 @@ class Environment private constructor(private var name: String) {
     private fun loadProperties(path: String): Properties {
         val resourceLoader: ResourceLoader = FileSystemResourceLoader()
         val resource: Resource = resourceLoader.getResource(path)
-        val result = Properties()
-        try {
-            val decorator: PropertiesDecorator = createDecorator()
-
-            decorator.decorate(resource.getResourcePath().toString(), result)
-            return result
-        } catch (e: Exception) {
-            throw IllegalStateException("Can not load properties file [$path]", e)
-        }
-    }
-
-    private fun createDecorator(): PropertiesDecorator {
-        val parser: Parser = ClasspathParser(FileSystemResourceLoader())
-
-        return DefaultDecorator(parser)
+        return ResourceUtils.loadPropertiesFile(resource, ClasspathParser(resourceLoader))
     }
 
     override fun equals(other: Any?): Boolean {

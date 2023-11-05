@@ -1,6 +1,8 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package org.javen.framework.core.type.scanner
 
-import org.javen.framework.core.annotation.Ignore
+import org.javen.framework.core.Ignore
 import org.javen.framework.core.type.filter.TypeFilter
 import org.javen.framework.core.type.filter.runtime.CanInstanceFilter
 import org.javen.framework.core.type.filter.runtime.UnAnnotatedFiler

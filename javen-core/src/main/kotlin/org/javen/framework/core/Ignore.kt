@@ -1,5 +1,5 @@
-package org.javen.framework.core.annotation
+package org.javen.framework.core
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class Ignore()
+annotation class Ignore
